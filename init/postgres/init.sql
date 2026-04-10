@@ -1,14 +1,14 @@
-CREATE TABLE IF NOT EXISTS addresses (
+CREATE TABLE IF NOT EXISTS geocoding_entries (
     id BIGSERIAL PRIMARY KEY,
     address VARCHAR(255) NOT NULL,
     latitude DOUBLE PRECISION NOT NULL,
     longitude DOUBLE PRECISION NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_addresses_address ON addresses (address);
-CREATE INDEX IF NOT EXISTS idx_addresses_lat_lng ON addresses (latitude, longitude);
+CREATE INDEX IF NOT EXISTS idx_geocoding_address ON geocoding_entries (address);
+CREATE INDEX IF NOT EXISTS idx_geocoding_coords ON geocoding_entries (latitude, longitude);
 
-INSERT INTO addresses (address, latitude, longitude) VALUES
+INSERT INTO geocoding_entries (address, latitude, longitude) VALUES
     ('1 Grid Street', 40.70, -74.02),
     ('2 Grid Street', 40.70, -74.01),
     ('3 Grid Street', 40.70, -74.00),
