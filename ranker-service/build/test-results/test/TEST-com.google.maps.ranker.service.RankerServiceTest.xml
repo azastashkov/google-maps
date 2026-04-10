@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.google.maps.ranker.service.RankerServiceTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-10T06:10:24" hostname="MacBook-Pro-Aleksandr.local" time="0.019">
+  <properties/>
+  <testcase name="rankRoutes_singleRoute_returnsRank1WithScoreZero()" classname="com.google.maps.ranker.service.RankerServiceTest" time="0.017"/>
+  <testcase name="rankRoutes_respectsWeighting()" classname="com.google.maps.ranker.service.RankerServiceTest" time="0.001"/>
+  <testcase name="rankRoutes_ranksLowerEtaHigher()" classname="com.google.maps.ranker.service.RankerServiceTest" time="0.0"/>
+  <testcase name="rankRoutes_returnsOnlyTopK()" classname="com.google.maps.ranker.service.RankerServiceTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
