@@ -1,0 +1,24 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: geocoding-service
+  datasource:
+    url: jdbc:postgresql://postgresql:5432/google_maps
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  cloud:
+    zookeeper:
+      connect-string: zookeeper:2181
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
+  metrics:
+    tags:
+      application: ${spring.application.name}
