@@ -1,0 +1,18 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'google-maps'
+
+include 'location-service'
+include 'navigation-service'
+include 'geocoding-service'
+include 'route-planner-service'
+include 'shortest-path-service'
+include 'eta-service'
+include 'ranker-service'
+include 'map-tile-service'
+include 'load-client'
