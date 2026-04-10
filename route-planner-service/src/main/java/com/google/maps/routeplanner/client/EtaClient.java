@@ -2,25 +2,22 @@ package com.google.maps.routeplanner.client;
 
 import com.google.maps.routeplanner.dto.EtaRequest;
 import com.google.maps.routeplanner.dto.EtaResponse;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class EtaClient {
 
-    private final RestClient restClient;
+    private final RestTemplate restTemplate;
 
-    public EtaClient(RestClient restClient) {
-        this.restClient = restClient;
+    public EtaClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     public EtaResponse getEta(EtaRequest request) {
-        return restClient.post()
-                .uri("http://eta-service/api/v1/eta")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
-                .retrieve()
-                .body(EtaResponse.class);
+        return restTemplate.postForObject(
+                "http://eta-service/api/v1/eta",
+                request,
+                EtaResponse.class);
     }
 }
