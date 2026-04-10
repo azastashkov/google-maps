@@ -1,0 +1,59 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'location-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'location-service-1:8081'
+          - 'location-service-2:8081'
+
+  - job_name: 'navigation-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'navigation-service-1:8082'
+          - 'navigation-service-2:8082'
+
+  - job_name: 'geocoding-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'geocoding-service-1:8083'
+          - 'geocoding-service-2:8083'
+
+  - job_name: 'route-planner-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'route-planner-service-1:8084'
+          - 'route-planner-service-2:8084'
+
+  - job_name: 'shortest-path-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'shortest-path-service-1:8085'
+          - 'shortest-path-service-2:8085'
+
+  - job_name: 'eta-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'eta-service-1:8086'
+          - 'eta-service-2:8086'
+
+  - job_name: 'ranker-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'ranker-service-1:8087'
+          - 'ranker-service-2:8087'
+
+  - job_name: 'map-tile-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'map-tile-service-1:8088'
+          - 'map-tile-service-2:8088'

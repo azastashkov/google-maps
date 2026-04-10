@@ -1,0 +1,480 @@
+services:
+
+  # ── Infrastructure ──────────────────────────────────────────────────
+
+  zookeeper:
+    image: zookeeper:3.9
+    ports:
+      - "2181:2181"
+    networks:
+      - google-maps-net
+
+  zoonavigator:
+    image: elkozmon/zoonavigator
+    ports:
+      - "9000:9000"
+    depends_on:
+      - zookeeper
+    environment:
+      HTTP_PORT: 9000
+      AUTO_CONNECT_CONNECTION_STRING: zookeeper:2181
+    networks:
+      - google-maps-net
+
+  cassandra:
+    image: cassandra:4.1
+    ports:
+      - "9042:9042"
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster'"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+    networks:
+      - google-maps-net
+
+  cassandra-init:
+    image: cassandra:4.1
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    volumes:
+      - ./init/cassandra/init.cql:/init.cql
+    command: cqlsh cassandra -f /init.cql
+    restart: "no"
+    networks:
+      - google-maps-net
+
+  postgresql:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: google_maps
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./init/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - google-maps-net
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      location-service-1:
+        condition: service_healthy
+      location-service-2:
+        condition: service_healthy
+      navigation-service-1:
+        condition: service_healthy
+      navigation-service-2:
+        condition: service_healthy
+      geocoding-service-1:
+        condition: service_healthy
+      geocoding-service-2:
+        condition: service_healthy
+      route-planner-service-1:
+        condition: service_healthy
+      route-planner-service-2:
+        condition: service_healthy
+      shortest-path-service-1:
+        condition: service_healthy
+      shortest-path-service-2:
+        condition: service_healthy
+      eta-service-1:
+        condition: service_healthy
+      eta-service-2:
+        condition: service_healthy
+      ranker-service-1:
+        condition: service_healthy
+      ranker-service-2:
+        condition: service_healthy
+      map-tile-service-1:
+        condition: service_healthy
+      map-tile-service-2:
+        condition: service_healthy
+    networks:
+      - google-maps-net
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - google-maps-net
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - google-maps-net
+
+  # ── Location Service ────────────────────────────────────────────────
+
+  location-service-1:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: location-service
+    environment:
+      SERVER_PORT: 8081
+    depends_on:
+      zookeeper:
+        condition: service_started
+      cassandra:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  location-service-2:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: location-service
+    environment:
+      SERVER_PORT: 8081
+    depends_on:
+      zookeeper:
+        condition: service_started
+      cassandra:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  # ── Navigation Service ──────────────────────────────────────────────
+
+  navigation-service-1:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: navigation-service
+    environment:
+      SERVER_PORT: 8082
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  navigation-service-2:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: navigation-service
+    environment:
+      SERVER_PORT: 8082
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  # ── Geocoding Service ───────────────────────────────────────────────
+
+  geocoding-service-1:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: geocoding-service
+    environment:
+      SERVER_PORT: 8083
+    depends_on:
+      zookeeper:
+        condition: service_started
+      postgresql:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8083/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  geocoding-service-2:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: geocoding-service
+    environment:
+      SERVER_PORT: 8083
+    depends_on:
+      zookeeper:
+        condition: service_started
+      postgresql:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8083/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  # ── Route Planner Service ───────────────────────────────────────────
+
+  route-planner-service-1:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: route-planner-service
+    environment:
+      SERVER_PORT: 8084
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8084/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  route-planner-service-2:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: route-planner-service
+    environment:
+      SERVER_PORT: 8084
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8084/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  # ── Shortest Path Service ───────────────────────────────────────────
+
+  shortest-path-service-1:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: shortest-path-service
+    environment:
+      SERVER_PORT: 8085
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8085/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  shortest-path-service-2:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: shortest-path-service
+    environment:
+      SERVER_PORT: 8085
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8085/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  # ── ETA Service ─────────────────────────────────────────────────────
+
+  eta-service-1:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: eta-service
+    environment:
+      SERVER_PORT: 8086
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8086/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  eta-service-2:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: eta-service
+    environment:
+      SERVER_PORT: 8086
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8086/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  # ── Ranker Service ──────────────────────────────────────────────────
+
+  ranker-service-1:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: ranker-service
+    environment:
+      SERVER_PORT: 8087
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8087/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  ranker-service-2:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: ranker-service
+    environment:
+      SERVER_PORT: 8087
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8087/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  # ── Map Tile Service ────────────────────────────────────────────────
+
+  map-tile-service-1:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: map-tile-service
+    environment:
+      SERVER_PORT: 8088
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8088/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  map-tile-service-2:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: map-tile-service
+    environment:
+      SERVER_PORT: 8088
+    depends_on:
+      zookeeper:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8088/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - google-maps-net
+
+  # ── Load Client ─────────────────────────────────────────────────────
+
+  load-client:
+    profiles:
+      - test
+    build:
+      context: .
+      args:
+        SERVICE_NAME: load-client
+    environment:
+      LOAD_TEST_DURATION_SECONDS: ${LOAD_TEST_DURATION_SECONDS:-60}
+      TARGET_BASE_URL: http://nginx:80
+    depends_on:
+      - nginx
+    networks:
+      - google-maps-net
+
+networks:
+  google-maps-net:
+    driver: bridge
+
+volumes:
+  cassandra-data:
+  postgres-data:
