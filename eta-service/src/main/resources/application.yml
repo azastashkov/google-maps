@@ -1,0 +1,16 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: eta-service
+  cloud:
+    zookeeper:
+      connect-string: zookeeper:2181
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
+  metrics:
+    tags:
+      application: ${spring.application.name}
