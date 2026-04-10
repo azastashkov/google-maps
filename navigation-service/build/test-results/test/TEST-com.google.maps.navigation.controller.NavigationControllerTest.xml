@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.google.maps.navigation.controller.NavigationControllerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-04-10T06:20:31" hostname="MacBook-Pro-Aleksandr.local" time="0.078">
+  <properties/>
+  <testcase name="navigate_withAddresses_returns200()" classname="com.google.maps.navigation.controller.NavigationControllerTest" time="0.07"/>
+  <testcase name="navigate_withCoords_returns200()" classname="com.google.maps.navigation.controller.NavigationControllerTest" time="0.003"/>
+  <testcase name="navigate_missingParams_returns400()" classname="com.google.maps.navigation.controller.NavigationControllerTest" time="0.002"/>
+  <system-out><![CDATA[01:20:30.889 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.google.maps.navigation.controller.NavigationControllerTest]: NavigationControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+01:20:30.932 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.google.maps.navigation.NavigationServiceApplication for test class com.google.maps.navigation.controller.NavigationControllerTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.4)
+
+2026-04-10T01:20:31.122-05:00  INFO 28663 --- [    Test worker] c.g.m.n.c.NavigationControllerTest       : Starting NavigationControllerTest using Java 21.0.10 with PID 28663 (started by azastashkov in /Users/azastashkov/projects/github/google-maps/navigation-service)
+2026-04-10T01:20:31.123-05:00  INFO 28663 --- [    Test worker] c.g.m.n.c.NavigationControllerTest       : No active profile set, falling back to 1 default profile: "default"
+2026-04-10T01:20:31.783-05:00  INFO 28663 --- [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-04-10T01:20:31.783-05:00  INFO 28663 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-10T01:20:31.784-05:00  INFO 28663 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-04-10T01:20:31.796-05:00  INFO 28663 --- [    Test worker] c.g.m.n.c.NavigationControllerTest       : Started NavigationControllerTest in 0.795 seconds (process running for 1.173)
+]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/Users/azastashkov/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.15.11/a38b16385e867f59a641330f0362ebe742788ed8/byte-buddy-agent-1.15.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>
