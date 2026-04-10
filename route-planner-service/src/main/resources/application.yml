@@ -1,0 +1,16 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: route-planner-service
+  cloud:
+    zookeeper:
+      connect-string: zookeeper:2181
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
+  metrics:
+    tags:
+      application: ${spring.application.name}
