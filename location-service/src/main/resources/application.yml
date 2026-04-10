@@ -1,0 +1,25 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: location-service
+  data:
+    cassandra:
+      keyspace-name: google_maps
+      contact-points: cassandra
+      port: 9042
+      local-datacenter: datacenter1
+      schema-action: create-if-not-exists
+  cloud:
+    zookeeper:
+      connect-string: zookeeper:2181
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
+  metrics:
+    tags:
+      application: ${spring.application.name}
