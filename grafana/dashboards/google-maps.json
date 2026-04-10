@@ -7,7 +7,7 @@
   "version": 1,
   "refresh": "10s",
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "templating": {
@@ -17,21 +17,23 @@
         "type": "custom",
         "label": "Service",
         "current": {
-          "text": "location-service",
-          "value": "location-service"
+          "text": "All",
+          "value": "$__all"
         },
         "options": [
-          { "text": "location-service", "value": "location-service", "selected": true },
-          { "text": "navigation-service", "value": "navigation-service", "selected": false },
-          { "text": "geocoding-service", "value": "geocoding-service", "selected": false },
-          { "text": "route-planner-service", "value": "route-planner-service", "selected": false },
-          { "text": "shortest-path-service", "value": "shortest-path-service", "selected": false },
-          { "text": "eta-service", "value": "eta-service", "selected": false },
-          { "text": "ranker-service", "value": "ranker-service", "selected": false },
-          { "text": "map-tile-service", "value": "map-tile-service", "selected": false }
+          {"text": "All", "value": "$__all", "selected": true},
+          {"text": "location-service", "value": "location-service", "selected": false},
+          {"text": "navigation-service", "value": "navigation-service", "selected": false},
+          {"text": "geocoding-service", "value": "geocoding-service", "selected": false},
+          {"text": "route-planner-service", "value": "route-planner-service", "selected": false},
+          {"text": "shortest-path-service", "value": "shortest-path-service", "selected": false},
+          {"text": "eta-service", "value": "eta-service", "selected": false},
+          {"text": "ranker-service", "value": "ranker-service", "selected": false},
+          {"text": "map-tile-service", "value": "map-tile-service", "selected": false}
         ],
         "query": "location-service,navigation-service,geocoding-service,route-planner-service,shortest-path-service,eta-service,ranker-service,map-tile-service",
-        "includeAll": false,
+        "includeAll": true,
+        "allValue": ".*",
         "multi": false
       }
     ]
@@ -41,150 +43,156 @@
       "id": 1,
       "title": "Request Rate",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
       "fieldConfig": {
         "defaults": {
           "unit": "reqps",
-          "color": { "mode": "palette-classic" }
+          "color": {"mode": "palette-classic"},
+          "custom": {"lineWidth": 2, "fillOpacity": 10}
         },
         "overrides": []
       },
       "targets": [
         {
-          "expr": "sum(rate(http_server_requests_seconds_count{application=\"$service\"}[1m]))",
-          "legendFormat": "Requests/sec",
+          "expr": "sum by (application) (rate(http_server_requests_seconds_count{application=~\"$service\"}[1m]))",
+          "legendFormat": "{{application}}",
           "refId": "A"
         }
       ],
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "single" }
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "multi"}
       }
     },
     {
       "id": 2,
       "title": "Response Time P95",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "color": { "mode": "palette-classic" }
+          "color": {"mode": "palette-classic"},
+          "custom": {"lineWidth": 2, "fillOpacity": 10}
         },
         "overrides": []
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{application=\"$service\"}[1m])) by (le))",
-          "legendFormat": "P95",
+          "expr": "histogram_quantile(0.95, sum by (le, application) (rate(http_server_requests_seconds_bucket{application=~\"$service\"}[1m])))",
+          "legendFormat": "{{application}} P95",
           "refId": "A"
         }
       ],
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "single" }
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "multi"}
       }
     },
     {
       "id": 3,
       "title": "Response Time P99",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "color": { "mode": "palette-classic" }
+          "color": {"mode": "palette-classic"},
+          "custom": {"lineWidth": 2, "fillOpacity": 10}
         },
         "overrides": []
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{application=\"$service\"}[1m])) by (le))",
-          "legendFormat": "P99",
+          "expr": "histogram_quantile(0.99, sum by (le, application) (rate(http_server_requests_seconds_bucket{application=~\"$service\"}[1m])))",
+          "legendFormat": "{{application}} P99",
           "refId": "A"
         }
       ],
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "single" }
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "multi"}
       }
     },
     {
       "id": 4,
-      "title": "Error Rate",
+      "title": "Error Rate (5xx)",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
       "fieldConfig": {
         "defaults": {
           "unit": "reqps",
-          "color": { "mode": "palette-classic" }
+          "color": {"mode": "palette-classic"},
+          "custom": {"lineWidth": 2, "fillOpacity": 10}
         },
         "overrides": []
       },
       "targets": [
         {
-          "expr": "sum(rate(http_server_requests_seconds_count{application=\"$service\",status=~\"5..\"}[1m]))",
-          "legendFormat": "5xx Errors/sec",
+          "expr": "sum by (application) (rate(http_server_requests_seconds_count{application=~\"$service\",status=~\"5..\"}[1m]))",
+          "legendFormat": "{{application}} 5xx",
           "refId": "A"
         }
       ],
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "single" }
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "multi"}
       }
     },
     {
       "id": 5,
       "title": "JVM Heap Used",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
       "fieldConfig": {
         "defaults": {
           "unit": "bytes",
-          "color": { "mode": "palette-classic" }
+          "color": {"mode": "palette-classic"},
+          "custom": {"lineWidth": 2, "fillOpacity": 10}
         },
         "overrides": []
       },
       "targets": [
         {
-          "expr": "jvm_memory_used_bytes{application=\"$service\",area=\"heap\"}",
+          "expr": "sum by (instance) (jvm_memory_used_bytes{application=~\"$service\",area=\"heap\"})",
           "legendFormat": "{{instance}}",
           "refId": "A"
         }
       ],
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "single" }
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "multi"}
       }
     },
     {
       "id": 6,
       "title": "Live Threads",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "color": { "mode": "palette-classic" }
+          "color": {"mode": "palette-classic"},
+          "custom": {"lineWidth": 2, "fillOpacity": 10}
         },
         "overrides": []
       },
       "targets": [
         {
-          "expr": "jvm_threads_live_threads{application=\"$service\"}",
+          "expr": "jvm_threads_live_threads{application=~\"$service\"}",
           "legendFormat": "{{instance}}",
           "refId": "A"
         }
       ],
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "single" }
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "multi"}
       }
     }
   ]
