@@ -1,5 +1,7 @@
 package com.google.maps.loadclient.scenario;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Slf4j
 public abstract class BaseScenario {
 
     protected final String name;
@@ -88,14 +91,13 @@ public abstract class BaseScenario {
             p99 = sorted.get((int) Math.min(sorted.size() - 1, Math.ceil(sorted.size() * 0.99) - 1));
         }
 
-        System.out.printf("=== %s ===%n", name);
-        System.out.printf("  Total Requests : %d%n", total);
-        System.out.printf("  Success        : %d%n", success);
-        System.out.printf("  Failure        : %d%n", failure);
-        System.out.printf("  Avg Latency    : %.2f ms%n", avg);
-        System.out.printf("  P95 Latency    : %d ms%n", p95);
-        System.out.printf("  P99 Latency    : %d ms%n", p99);
-        System.out.println();
+        log.info("=== {} ===", name);
+        log.info("  Total Requests : {}", total);
+        log.info("  Success        : {}", success);
+        log.info("  Failure        : {}", failure);
+        log.info("  Avg Latency    : {} ms", String.format("%.2f", avg));
+        log.info("  P95 Latency    : {} ms", p95);
+        log.info("  P99 Latency    : {} ms", p99);
     }
 
     protected abstract void execute(HttpClient client, String baseUrl, int threadIndex) throws Exception;

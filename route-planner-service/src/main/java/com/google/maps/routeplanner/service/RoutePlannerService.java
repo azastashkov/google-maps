@@ -11,23 +11,19 @@ import com.google.maps.routeplanner.dto.RouteCandidate;
 import com.google.maps.routeplanner.dto.RoutePlannerResponse;
 import com.google.maps.routeplanner.dto.RouteResponse;
 import com.google.maps.routeplanner.dto.ShortestPathsResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RoutePlannerService {
 
     private final ShortestPathClient shortestPathClient;
     private final EtaClient etaClient;
     private final RankerClient rankerClient;
-
-    public RoutePlannerService(ShortestPathClient shortestPathClient, EtaClient etaClient, RankerClient rankerClient) {
-        this.shortestPathClient = shortestPathClient;
-        this.etaClient = etaClient;
-        this.rankerClient = rankerClient;
-    }
 
     public RoutePlannerResponse planRoutes(double originLat, double originLng, double destLat, double destLng, int k) {
         ShortestPathsResponse paths = shortestPathClient.getShortestPaths(originLat, originLng, destLat, destLng, k);

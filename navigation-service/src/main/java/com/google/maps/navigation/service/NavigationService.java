@@ -5,18 +5,15 @@ import com.google.maps.navigation.client.RoutePlannerClient;
 import com.google.maps.navigation.dto.GeocodingResponse;
 import com.google.maps.navigation.dto.NavigationResponse;
 import com.google.maps.navigation.dto.RoutePlannerResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class NavigationService {
 
     private final GeocodingClient geocodingClient;
     private final RoutePlannerClient routePlannerClient;
-
-    public NavigationService(GeocodingClient geocodingClient, RoutePlannerClient routePlannerClient) {
-        this.geocodingClient = geocodingClient;
-        this.routePlannerClient = routePlannerClient;
-    }
 
     public NavigationResponse navigate(String originAddress, String destinationAddress,
                                        Double originLat, Double originLng,

@@ -1,17 +1,15 @@
 package com.google.maps.navigation.client;
 
 import com.google.maps.navigation.dto.GeocodingResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@RequiredArgsConstructor
 public class GeocodingClient {
 
     private final RestTemplate restTemplate;
-
-    public GeocodingClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     public GeocodingResponse geocode(String address) {
         return restTemplate.getForObject(

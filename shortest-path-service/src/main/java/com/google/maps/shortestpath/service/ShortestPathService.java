@@ -6,21 +6,18 @@ import com.google.maps.shortestpath.dto.ShortestPathsResponse;
 import com.google.maps.shortestpath.graph.DijkstraKShortest;
 import com.google.maps.shortestpath.graph.Graph;
 import com.google.maps.shortestpath.graph.GraphGenerator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ShortestPathService {
 
     private final GraphGenerator graphGenerator;
     private final DijkstraKShortest dijkstraKShortest;
-
-    public ShortestPathService(GraphGenerator graphGenerator, DijkstraKShortest dijkstraKShortest) {
-        this.graphGenerator = graphGenerator;
-        this.dijkstraKShortest = dijkstraKShortest;
-    }
 
     public ShortestPathsResponse findShortestPaths(double originLat, double originLng,
                                                     double destLat, double destLng, int k) {

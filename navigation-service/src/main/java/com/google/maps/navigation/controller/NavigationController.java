@@ -2,6 +2,7 @@ package com.google.maps.navigation.controller;
 
 import com.google.maps.navigation.dto.NavigationResponse;
 import com.google.maps.navigation.service.NavigationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,13 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class NavigationController {
 
     private final NavigationService navigationService;
-
-    public NavigationController(NavigationService navigationService) {
-        this.navigationService = navigationService;
-    }
 
     @GetMapping("/navigate")
     public ResponseEntity<NavigationResponse> navigate(

@@ -2,22 +2,20 @@ package com.google.maps.eta.service;
 
 import com.google.maps.eta.dto.Coordinate;
 import com.google.maps.eta.dto.EtaResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class EtaService {
 
     private static final double BASE_SPEED_MS = 40.0 * 1000.0 / 3600.0;
     private static final double EARTH_RADIUS_METERS = 6_371_000.0;
 
     private final TrafficSimulator trafficSimulator;
-
-    public EtaService(TrafficSimulator trafficSimulator) {
-        this.trafficSimulator = trafficSimulator;
-    }
 
     public EtaResponse calculateEta(List<Coordinate> waypoints, Instant departureTime) {
         double totalDistance = 0.0;

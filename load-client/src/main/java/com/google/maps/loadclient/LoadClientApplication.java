@@ -5,12 +5,14 @@ import com.google.maps.loadclient.scenario.GeocodingScenario;
 import com.google.maps.loadclient.scenario.LocationUpdateScenario;
 import com.google.maps.loadclient.scenario.MapTileScenario;
 import com.google.maps.loadclient.scenario.NavigationScenario;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+@Slf4j
 public class LoadClientApplication {
 
     public static void main(String[] args) throws InterruptedException {
@@ -19,9 +21,8 @@ public class LoadClientApplication {
         );
         String baseUrl = System.getenv().getOrDefault("TARGET_BASE_URL", "http://nginx:80");
 
-        System.out.println("Starting load test against: " + baseUrl);
-        System.out.println("Duration: " + durationSeconds + " seconds");
-        System.out.println();
+        log.info("Starting load test against: {}", baseUrl);
+        log.info("Duration: {} seconds", durationSeconds);
 
         HttpClient client = HttpClient.newBuilder()
                 .executor(Executors.newVirtualThreadPerTaskExecutor())
@@ -39,17 +40,15 @@ public class LoadClientApplication {
             scenario.start(client, baseUrl);
         }
 
-        System.out.println("All scenarios started. Running for " + durationSeconds + " seconds...");
+        log.info("All scenarios started. Running for {} seconds...", durationSeconds);
         Thread.sleep(Duration.ofSeconds(durationSeconds));
 
-        System.out.println("Stopping scenarios...");
+        log.info("Stopping scenarios...");
         for (BaseScenario scenario : scenarios) {
             scenario.stop();
         }
 
-        System.out.println();
-        System.out.println("=== Load Test Results ===");
-        System.out.println();
+        log.info("=== Load Test Results ===");
         for (BaseScenario scenario : scenarios) {
             scenario.printStats();
         }

@@ -1,5 +1,6 @@
 package com.google.maps.shortestpath.graph;
 
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -13,6 +14,7 @@ public class GraphGenerator {
     private static final double BASE_LNG = -74.02;
     private static final double SPACING = 0.005;
 
+    @Getter
     private final Graph graph;
 
     public GraphGenerator() {
@@ -71,7 +73,4 @@ public class GraphGenerator {
         }
     }
 
-    public Graph getGraph() {
-        return graph;
-    }
 }
